@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Protocolo de Titulación · Oziel Alexander Canales Andraca</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+  /* ══════════════════════════════════════════════════════
+     VARIABLES
+  ══════════════════════════════════════════════════════ */
+  :root {
+    --bg-0: #020810;
+    --bg-1: #071020;
+    --bg-2: #0A192F;
+    --pearl:     #FDFBF7;
+    --pearl-80:  rgba(253,251,247,.82);
+    --pearl-55:  rgba(253,251,247,.56);
+    --pearl-30:  rgba(253,251,247,.30);
+    --pearl-15:  rgba(253,251,247,.15);
+    --gold-a: #BF953F;
+    --gold-b: #FCF6BA;
+    --gold-c: #B38728;
+    --gold-d: #FBF5B7;
+    --gg: linear-gradient(90deg,#BF953F 0%,#FCF6BA 28%,#B38728 55%,#FBF5B7 82%,#BF953F 100%);
+    --ease: cubic-bezier(.22,1,.36,1);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     RESET BASE
+  ══════════════════════════════════════════════════════ */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  html {
+    /* Desktop: sin scroll. Móvil: scroll habilitado por JS */
+    overflow: hidden;
+    scroll-behavior: smooth;
+  }
+  html.mobile-scroll { overflow-y: auto; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background:
+      radial-gradient(ellipse 100% 80% at 20% 10%, rgba(8,30,80,.70) 0%, transparent 55%),
+      radial-gradient(ellipse  80% 90% at 80% 90%, rgba(3, 9,28,.85) 0%, transparent 60%),
+      linear-gradient(160deg, var(--bg-0) 0%, var(--bg-2) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: env(safe-area-inset-top,0) env(safe-area-inset-right,0)
+             env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
+  }
+
+  /* ══════════════════════════════════════════════════════
+     CANVAS PARTÍCULAS
+  ══════════════════════════════════════════════════════ */
+  #cvs {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    opacity: .9;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     NEBLINAS DE AMBIENTE
+  ══════════════════════════════════════════════════════ */
+  .amb {
+    position: fixed; border-radius: 50%;
+    pointer-events: none; z-index: 0;
+  }
+  .a1 {
+    width: clamp(320px,65vw,700px); height: clamp(320px,65vw,700px);
+    top:-15%; left:-10%;
+    background: radial-gradient(circle, rgba(8,35,100,.55) 0%, transparent 70%);
+    filter: blur(clamp(50px,8vw,100px));
+    animation: amb 14s ease-in-out infinite alternate;
+  }
+  .a2 {
+    width: clamp(220px,45vw,500px); height: clamp(220px,45vw,500px);
+    bottom:-12%; right:-8%;
+    background: radial-gradient(circle, rgba(191,149,63,.07) 0%, transparent 70%);
+    filter: blur(clamp(40px,6vw,80px));
+    animation: amb 18s ease-in-out 4s infinite alternate-reverse;
+  }
+  .a3 {
+    width: clamp(180px,35vw,380px); height: clamp(180px,35vw,380px);
+    top:30%; right:5%;
+    background: radial-gradient(circle, rgba(10,52,140,.30) 0%, transparent 70%);
+    filter: blur(clamp(35px,5vw,65px));
+    animation: amb 10s ease-in-out 2s infinite alternate;
+  }
+  @keyframes amb {
+    from { transform: scale(1) translateY(0); }
+    to   { transform: scale(1.14) translateY(-18px); }
+  }
+
+  /* ══════════════════════════════════════════════════════
+     ESCENA + CARD
+  ══════════════════════════════════════════════════════ */
+  .scene {
+    position: relative; z-index: 1;
+    width: 100%;
+    max-width: 860px;
+    padding: clamp(28px, 5vw, 48px) clamp(16px, 4vw, 32px);
+    perspective: 1400px;
+    transform-origin: center center;
+  }
+
+  .card {
+    position: relative;
+    background: rgba(8, 20, 46, .32);
+    backdrop-filter: blur(30px) saturate(190%) brightness(1.07);
+    -webkit-backdrop-filter: blur(30px) saturate(190%) brightness(1.07);
+
+    border: 1px solid rgba(255,255,255,.04);
+    border-top:   1px solid rgba(255,255,255,.22);
+    border-left:  1px solid rgba(255,255,255,.12);
+    border-right: 1px solid rgba(255,255,255,.03);
+    border-bottom:1px solid rgba(0,0,0,.35);
+
+    box-shadow:
+      0 50px 100px rgba(0,0,0,.70),
+      0 18px  45px rgba(0,0,0,.45),
+      inset 0  1px 0 rgba(255,255,255,.12),
+      inset 0 -1px 0 rgba(0,0,0,.22),
+      inset 1px 0 0 rgba(255,255,255,.05);
+
+    border-radius: 14px;
+    padding: clamp(2.2rem,5vw,3.8rem) clamp(1.6rem,6vw,4.6rem) clamp(2rem,4.5vw,3.4rem);
+    text-align: center;
+    overflow: hidden;
+    transform-style: preserve-3d;
+    will-change: transform;
+
+    opacity: 0;
+    animation: cardIn 1.8s var(--ease) .2s forwards;
+  }
+  @keyframes cardIn {
+    from { opacity:0; transform:translateY(26px) scale(.96); }
+    to   { opacity:1; transform:translateY(0)    scale(1); }
+  }
+
+  /* Bisel superior animado */
+  .card::before {
+    content:'';
+    position:absolute; top:0; left:6%; right:6%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),rgba(252,246,186,.32),rgba(255,255,255,.28),transparent);
+    animation: topBevel 5s ease-in-out infinite;
+  }
+  .card::after {
+    content:'';
+    position:absolute; bottom:0; left:22%; right:22%; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(191,149,63,.20),transparent);
+  }
+  @keyframes topBevel { 0%,100%{opacity:.55} 50%{opacity:1} }
+
+  /* ── Esquinas doradas ── */
+  .corner { position:absolute; width:52px; height:52px; pointer-events:none; }
+  .corner::before, .corner::after {
+    content:''; position:absolute;
+    background:var(--gg); background-size:300% auto;
+    animation:goldShimmer 6s linear infinite;
+    border-radius:1px;
+  }
+  .c-tl{top:14px;left:14px}
+  .c-tl::before{top:0;left:0;width:52px;height:1px}
+  .c-tl::after {top:0;left:0;width:1px;height:52px}
+  .c-tr{top:14px;right:14px}
+  .c-tr::before{top:0;right:0;left:auto;width:52px;height:1px}
+  .c-tr::after {top:0;right:0;left:auto;width:1px;height:52px}
+  .c-bl{bottom:14px;left:14px}
+  .c-bl::before{bottom:0;top:auto;left:0;width:52px;height:1px}
+  .c-bl::after {bottom:0;top:auto;left:0;width:1px;height:52px}
+  .c-br{bottom:14px;right:14px}
+  .c-br::before{bottom:0;top:auto;right:0;left:auto;width:52px;height:1px}
+  .c-br::after {bottom:0;top:auto;right:0;left:auto;width:1px;height:52px}
+
+  /* Puntos de esquina brillantes */
+  .cdot {
+    position:absolute; width:5px; height:5px; border-radius:50%;
+    background:var(--gold-b);
+    box-shadow:0 0 10px rgba(252,246,186,.75), 0 0 20px rgba(191,149,63,.35);
+    pointer-events:none;
+    animation:dotPulse 4s ease-in-out infinite;
+  }
+  .cd-tl{top:12px;left:12px} .cd-tr{top:12px;right:12px}
+  .cd-bl{bottom:12px;left:12px} .cd-br{bottom:12px;right:12px}
+  @keyframes dotPulse {
+    0%,100%{box-shadow:0 0 8px rgba(252,246,186,.6),0 0 16px rgba(191,149,63,.25)}
+    50%    {box-shadow:0 0 14px rgba(252,246,186,.9),0 0 28px rgba(191,149,63,.50)}
+  }
+
+  /* Glare / reflejo dinámico */
+  .glare {
+    position:absolute; inset:0; border-radius:14px;
+    background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.05) 0%,transparent 60%);
+    pointer-events:none; z-index:3;
+    transition:background .04s linear;
+  }
+
+  /* Sello central superior */
+  .seal {
+    position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+    width:clamp(40px,7vw,48px); height:clamp(40px,7vw,48px);
+    border-radius:50%;
+    background:linear-gradient(140deg,#060f1e,#0e2040);
+    border:1px solid rgba(191,149,63,.55);
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 22px rgba(0,0,0,.65),0 0 16px rgba(191,149,63,.20);
+    z-index:10;
+    opacity:0; animation:fadeIn .8s ease 1.1s forwards;
+  }
+
+  /* ══════════════════════════════════════════════════════
+     TIPOGRAFÍA — BLOQUES
+  ══════════════════════════════════════════════════════ */
+
+  /* Institución */
+  .inst {
+    margin-bottom: clamp(.9rem,2.5vw,1.4rem);
+    opacity:0; animation:fadeDown .9s var(--ease) 1.3s forwards;
+  }
+  .inst-name {
+    font-family:'Montserrat',sans-serif;
+    font-weight:400;
+    font-size: clamp(.68rem,.9vw+.4rem,.82rem);
+    letter-spacing: .26em;
+    text-transform:uppercase;
+    color:var(--pearl-80);
+    line-height:1.8;
+  }
+
+  /* Divisor dorado */
+  .dg {
+    display:flex; align-items:center; gap:10px;
+    margin:clamp(.7rem,1.5vw,1.1rem) auto; width:fit-content;
+    opacity:0; animation:fadeIn .7s ease forwards;
+  }
+  .dg .dl {
+    height:1px; width:clamp(40px,7vw,70px);
+    background:linear-gradient(90deg,transparent,rgba(191,149,63,.6),transparent);
+  }
+  .dg .dot {
+    width:5px; height:5px; border-radius:50%; flex-shrink:0;
+    background:var(--gg); background-size:300% auto;
+    animation:goldShimmer 5s linear infinite;
+    box-shadow:0 0 9px rgba(252,246,186,.45);
+  }
+  .dg .dia {
+    width:7px; height:7px; border-radius:1px; flex-shrink:0;
+    transform:rotate(45deg);
+    background:var(--gg); background-size:300% auto;
+    animation:goldShimmer 5s linear infinite;
+    box-shadow:0 0 11px rgba(252,246,186,.55);
+  }
+
+  /* Línea fina */
+  .dthin {
+    border:none; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
+    margin:clamp(.7rem,1.5vw,1.2rem) 0;
+    opacity:0; animation:fadeIn .7s ease forwards;
+  }
+
+  /* Frase de invitación */
+  .phrase {
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic; font-weight:400;
+    font-size: clamp(1.05rem,2.2vw,1.35rem);
+    color:var(--pearl-80);
+    letter-spacing:.05em;
+    opacity:0; animation:fadeDown .9s var(--ease) forwards;
+  }
+
+  /* Título Protocolo */
+  .proto {
+    font-family:'Cinzel',serif;
+    font-weight:700;
+    font-size: clamp(1.55rem,4.5vw,2.55rem);
+    letter-spacing:.13em;
+    text-transform:uppercase;
+    line-height:1.2;
+    background:var(--gg); background-size:300% auto;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent; color:transparent;
+    animation:goldShimmer 6s linear infinite, fadeDown 1s var(--ease) forwards;
+    opacity:0;
+  }
+
+  /* "de" cursiva */
+  .de {
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic; font-weight:300;
+    font-size: clamp(1.1rem,2vw,1.25rem);
+    color:var(--pearl-55);
+    margin:.25rem 0 .4rem;
+    opacity:0; animation:fadeIn .7s ease forwards;
+  }
+
+  /* NOMBRE */
+  .name {
+    font-family:'Cinzel',serif;
+    font-weight:600;
+    font-size: clamp(1.45rem,4vw,2.35rem);
+    letter-spacing:.10em;
+    line-height:1.28;
+    opacity:0;
+    animation:nameReveal 1.5s var(--ease) forwards;
+  }
+  .name .ns {
+    background:linear-gradient(
+      105deg,
+      var(--pearl) 0%, var(--pearl) 26%,
+      rgba(252,246,186,.96) 40%,
+      var(--pearl) 54%, var(--pearl) 100%
+    );
+    background-size:260% auto;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:softShimmer 8s linear 4s infinite;
+    /* text-shadow no funciona con background-clip text;
+       ponemos el glow en el padre */
+    filter: drop-shadow(0 0 18px rgba(253,251,247,.14));
+  }
+
+  /* Carrera */
+  .career {
+    font-family:'Montserrat',sans-serif;
+    font-weight:300;
+    font-size: clamp(.64rem,.85vw+.3rem,.76rem);
+    letter-spacing:.26em;
+    text-transform:uppercase;
+    color:var(--pearl-55);
+    margin-top:clamp(.6rem,1.5vw,.95rem);
+    opacity:0; animation:fadeUp .8s var(--ease) forwards;
+  }
+  .career b { font-weight:500; color:rgba(252,246,186,.68); }
+
+  /* ── Strip fecha/hora ── */
+  .strip {
+    display:grid;
+    grid-template-columns:1fr 1px 1fr;
+    align-items:center;
+    margin-top:clamp(1.4rem,3vw,2.2rem);
+    padding:clamp(1.1rem,2.5vw,1.6rem) 0;
+    border-top:   1px solid rgba(255,255,255,.07);
+    border-bottom:1px solid rgba(255,255,255,.07);
+    opacity:0; animation:fadeUp 1s var(--ease) forwards;
+  }
+  .ev-col { display:flex; flex-direction:column; gap:.4rem; align-items:center; }
+  .ev-lbl {
+    font-family:'Montserrat',sans-serif; font-weight:300;
+    font-size: clamp(.58rem,.65vw+.3rem,.65rem);
+    letter-spacing:.30em; text-transform:uppercase;
+    color:var(--pearl-30);
+  }
+  .ev-val {
+    font-family:'Cinzel',serif; font-weight:500;
+    font-size: clamp(.88rem,1.8vw,1.12rem);
+    letter-spacing:.11em;
+    background:var(--gg); background-size:300% auto;
+    -webkit-background-clip:text; background-clip:text;
+    -webkit-text-fill-color:transparent;
+    animation:goldShimmer 9s linear 1s infinite;
+  }
+  .ev-sep {
+    height:clamp(32px,5vw,46px);
+    background:linear-gradient(180deg,transparent,rgba(255,255,255,.14),transparent);
+  }
+
+  /* ── Mensaje cierre ── */
+  .closing {
+    margin-top:clamp(1.2rem,2.8vw,1.7rem);
+    opacity:0; animation:fadeUp .9s var(--ease) forwards;
+  }
+  .closing p {
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic; font-weight:400;
+    font-size: clamp(.92rem,1.6vw,1.1rem);
+    line-height:1.88;
+    color:rgba(253,251,247,.58);
+    max-width:480px; margin:0 auto;
+  }
+  .closing p strong { font-style:normal; font-weight:500; color:var(--pearl-80); }
+
+  /* ── Ornamento inferior ── */
+  .orn {
+    margin-top:clamp(1rem,2vw,1.5rem);
+    opacity:0; animation:fadeIn 1.2s ease forwards;
+    display:flex; justify-content:center;
+  }
+  .orn svg { width:clamp(160px,40vw,240px); height:auto; }
+
+  /* ══════════════════════════════════════════════════════
+     ANIMATION DELAYS (stagger)
+  ══════════════════════════════════════════════════════ */
+  .inst        { animation-delay:1.30s }
+  .dg.g1       { animation-delay:1.65s }
+  .phrase      { animation-delay:1.80s }
+  .dthin.t1    { animation-delay:2.00s }
+  .proto       { animation-delay:2.10s }
+  .de          { animation-delay:2.62s }
+  .dg.g2       { animation-delay:2.72s }
+  .name        { animation-delay:2.85s }
+  .career      { animation-delay:3.35s }
+  .strip       { animation-delay:3.65s }
+  .closing     { animation-delay:4.05s }
+  .orn         { animation-delay:4.50s }
+
+  /* ══════════════════════════════════════════════════════
+     KEYFRAMES
+  ══════════════════════════════════════════════════════ */
+  @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
+  @keyframes fadeDown{ from{opacity:0;transform:translateY(-13px)} to{opacity:1;transform:none} }
+  @keyframes fadeUp  { from{opacity:0;transform:translateY(13px)}  to{opacity:1;transform:none} }
+  @keyframes nameReveal {
+    from{opacity:0;transform:translateY(16px) scale(.97);letter-spacing:.20em}
+    to  {opacity:1;transform:none;letter-spacing:.10em}
+  }
+  @keyframes goldShimmer  { to{background-position:300% center} }
+  @keyframes softShimmer  { to{background-position:260% center} }
+
+  /* ══════════════════════════════════════════════════════
+     ★ RESPONSIVE MÓVIL ULTRA PREMIUM ★
+  ══════════════════════════════════════════════════════ */
+
+  /* ── Pantallas pequeñas en portrait (la mayoría de móviles) ── */
+  @media screen and (max-width:480px) {
+    html.mobile-scroll body {
+      align-items: flex-start;
+      padding-top: clamp(24px,5vh,44px);
+      padding-bottom: clamp(24px,5vh,44px);
+    }
+    .scene { padding:16px 14px; max-width:100%; }
+    .card  { padding:2.6rem 1.5rem 2.2rem; border-radius:12px; }
+
+    /* Esquinas un poco más pequeñas */
+    .corner { width:44px; height:44px; }
+    .c-tl::before,.c-tr::before,.c-bl::before,.c-br::before { width:44px }
+    .c-tl::after ,.c-tr::after ,.c-bl::after ,.c-br::after  { height:44px }
+
+    .inst-name  { font-size:.72rem; letter-spacing:.18em; }
+    .phrase     { font-size:1.05rem; }
+    .proto      { font-size:clamp(1.35rem,6.5vw,1.8rem); letter-spacing:.10em; }
+    .name       { font-size:clamp(1.25rem,6vw,1.65rem); letter-spacing:.07em; }
+    .career     { font-size:.68rem; letter-spacing:.18em; }
+    .ev-val     { font-size:.90rem; letter-spacing:.08em; }
+
+    .dg .dl     { width:38px; }
+    .strip      { margin-top:1.3rem; padding:1.1rem 0; }
+    .closing p  { font-size:.97rem; line-height:1.80; }
+    .orn svg    { width:180px; }
+  }
+
+  /* ── Pantallas muy pequeñas (≤360px) ── */
+  @media screen and (max-width:360px) {
+    .card { padding:2.2rem 1.2rem 2rem; }
+    .proto { font-size:1.28rem; letter-spacing:.08em; }
+    .name  { font-size:1.18rem; }
+    .inst-name { font-size:.66rem; }
+  }
+
+  /* ── Landscape en móvil: 2 columnas para fecha/hora, card más compacto ── */
+  @media screen and (max-height:500px) and (max-width:900px) {
+    html { overflow-y:auto }
+    .scene { padding:12px 14px; }
+    .card  { padding:2rem 3rem 1.8rem; }
+    .inst  { margin-bottom:.7rem; }
+    .dg    { margin:.55rem auto; }
+    .dthin { margin:.55rem 0; }
+    .strip { margin-top:1rem; padding:.9rem 0; }
+    .closing { margin-top:.9rem; }
+    .orn   { margin-top:.8rem; }
+    .proto { font-size:clamp(1.1rem,4.5vw,1.6rem); }
+    .name  { font-size:clamp(1.0rem,4vw,1.5rem); }
+    .phrase { font-size:.98rem; }
+  }
+
+  /* ── Tablet portrait (481–768px) ── */
+  @media screen and (min-width:481px) and (max-width:768px) {
+    .scene { padding:20px 18px; }
+    .card  { padding:3rem 2.8rem 2.6rem; }
+    .proto { font-size:clamp(1.5rem,4.5vw,2rem); }
+    .name  { font-size:clamp(1.35rem,4vw,1.85rem); }
+  }
+  </style>
+</head>
+<body>
+
+  <!-- Ambiente -->
+  <div class="amb a1"></div>
+  <div class="amb a2"></div>
+  <div class="amb a3"></div>
+
+  <!-- Canvas -->
+  <canvas id="cvs"></canvas>
+
+  <!-- Escena -->
+  <div class="scene" id="scene">
+    <div class="card" id="card">
+
+      <!-- Ornamentos borde -->
+      <div class="corner c-tl"></div><div class="corner c-tr"></div>
+      <div class="corner c-bl"></div><div class="corner c-br"></div>
+      <div class="cdot cd-tl"></div><div class="cdot cd-tr"></div>
+      <div class="cdot cd-bl"></div><div class="cdot cd-br"></div>
+
+      <!-- Glare -->
+      <div class="glare" id="glare"></div>
+
+      <!-- Sello -->
+      <div class="seal">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <path d="M11 2L12.8 8.8L19.8 11L12.8 13.2L11 20L9.2 13.2L2.2 11L9.2 8.8Z"
+                fill="none" stroke="rgba(252,246,186,.72)" stroke-width=".9"/>
+          <circle cx="11" cy="11" r="2.2" fill="rgba(252,246,186,.42)"/>
+        </svg>
+      </div>
+
+      <!-- Institución -->
+      <div class="inst">
+        <p class="inst-name">Instituto Tecnológico de Chilpancingo</p>
+      </div>
+
+      <!-- Divisor 1 -->
+      <div class="dg g1">
+        <div class="dl"></div><div class="dot"></div>
+        <div class="dia"></div><div class="dot"></div><div class="dl"></div>
+      </div>
+
+      <!-- Frase -->
+      <p class="phrase">Te invito a compartir este momento</p>
+
+      <!-- Línea fina -->
+      <hr class="dthin t1" />
+
+      <!-- Título -->
+      <h1 class="proto">Protocolo de Titulación</h1>
+
+      <!-- de -->
+      <p class="de">de</p>
+
+      <!-- Divisor 2 -->
+      <div class="dg g2">
+        <div class="dl" style="width:48px"></div>
+        <div class="dia"></div>
+        <div class="dl" style="width:48px"></div>
+      </div>
+
+      <!-- Nombre -->
+      <h2 class="name"><span class="ns">Oziel Alexander Canales Andraca</span></h2>
+
+      <!-- Carrera -->
+      <p class="career">Ingeniería <b>en Sistemas</b> Computacionales</p>
+
+      <!-- Fecha / Hora -->
+      <div class="strip">
+        <div class="ev-col">
+          <span class="ev-lbl">Fecha</span>
+          <span class="ev-val">15 de Octubre · 2026</span>
+        </div>
+        <div class="ev-sep"></div>
+        <div class="ev-col">
+          <span class="ev-lbl">Hora</span>
+          <span class="ev-val">11:40 a.m.</span>
+        </div>
+      </div>
+
+      <!-- Cierre -->
+      <div class="closing">
+        <p>
+          Sería todo un honor contar con su presencia en algo tan significativo,
+          siendo personas <strong>tan especiales para mí</strong>, que me apoyaron
+          en todo ese gran trayecto — y aún lo hacen.
+        </p>
+      </div>
+
+      <!-- Ornamento -->
+      <div class="orn">
+        <svg viewBox="0 0 240 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="0"   y1="11" x2="94"  y2="11" stroke="rgba(191,149,63,.30)" stroke-width=".8"/>
+          <line x1="146" y1="11" x2="240" y2="11" stroke="rgba(191,149,63,.30)" stroke-width=".8"/>
+          <circle cx="98"  cy="11" r="2.2" fill="rgba(252,246,186,.40)"/>
+          <circle cx="142" cy="11" r="2.2" fill="rgba(252,246,186,.40)"/>
+          <rect x="117" y="7.5" width="6" height="6"
+                transform="rotate(45 120 10.5)" fill="rgba(252,246,186,.58)"/>
+          <circle cx="82"  cy="11" r="1.4" fill="rgba(191,149,63,.22)"/>
+          <circle cx="158" cy="11" r="1.4" fill="rgba(191,149,63,.22)"/>
+          <circle cx="68"  cy="11" r="1.0" fill="rgba(191,149,63,.14)"/>
+          <circle cx="172" cy="11" r="1.0" fill="rgba(191,149,63,.14)"/>
+          <line x1="9"  y1="6" x2="19" y2="16" stroke="rgba(191,149,63,.14)" stroke-width=".8"/>
+          <line x1="19" y1="6" x2="9"  y2="16" stroke="rgba(191,149,63,.14)" stroke-width=".8"/>
+          <line x1="221" y1="6" x2="231" y2="16" stroke="rgba(191,149,63,.14)" stroke-width=".8"/>
+          <line x1="231" y1="6" x2="221" y2="16" stroke="rgba(191,149,63,.14)" stroke-width=".8"/>
+        </svg>
+      </div>
+
+    </div><!-- /.card -->
+  </div><!-- /.scene -->
+
+  <script>
+  (() => {
+    'use strict';
+
+    /* ══════════════════════════════════
+       A. DETECCIÓN MÓVIL
+    ══════════════════════════════════ */
+    const isMobile = () => /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+                        || window.innerWidth <= 480;
+
+    /* En móvil permitimos scroll natural y eliminamos auto-scale */
+    if (isMobile()) {
+      document.documentElement.classList.add('mobile-scroll');
+    }
+
+    /* ══════════════════════════════════
+       B. CANVAS — partículas adaptadas
+    ══════════════════════════════════ */
+    const cvs = document.getElementById('cvs');
+    const ctx = cvs.getContext('2d');
+    let W, H;
+    const resize = () => { W = cvs.width = innerWidth; H = cvs.height = innerHeight; };
+    resize();
+    addEventListener('resize', () => { resize(); });
+
+    const rand = (a,b) => a + Math.random()*(b-a);
+    const TAU  = Math.PI * 2;
+    const MOBILE = isMobile();
+
+    /* Menos partículas en móvil para rendimiento */
+    const LAYERS = [
+      { n: MOBILE? 55: 100, rMin:.25, rMax:1.1, vMin:.012, vMax:.09, aMin:.04, aMax:.20,
+        colors:['rgba(180,205,255,','rgba(200,218,255,'] },
+      { n: MOBILE? 30:  55, rMin:.35, rMax:1.4, vMin:.000, vMax:.018, aMin:.05, aMax:.27,
+        colors:['rgba(210,225,255,','rgba(228,238,255,'] },
+      { n: MOBILE? 12:  22, rMin:.8,  rMax:1.8, vMin:.035, vMax:.14,  aMin:.08, aMax:.28,
+        colors:['rgba(191,149,63,','rgba(252,246,186,'] },
+    ];
+
+    class Dot {
+      constructor(cfg, init=false) { this.cfg=cfg; this.reset(init); }
+      reset(init=false) {
+        const c=this.cfg;
+        this.x  = rand(0,W);
+        this.y  = init ? rand(0,H) : H+rand(2,14);
+        this.r  = rand(c.rMin,c.rMax);
+        this.vx = rand(-.22,.22);
+        this.vy = -rand(c.vMin,c.vMax);
+        this.a  = rand(c.aMin,c.aMax);
+        this.ph = rand(0,TAU);
+        this.ps = rand(.003,.013);
+        this.col = c.colors[0|Math.random()*c.colors.length];
+      }
+      update() {
+        this.x+=this.vx; this.y+=this.vy;
+        this.ph+=this.ps;
+        this.ca = this.a*(.55+.45*Math.sin(this.ph));
+        if(this.y<-8||this.x<-8||this.x>W+8) this.reset();
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.r,0,TAU);
+        ctx.fillStyle=this.col+this.ca+')';
+        ctx.fill();
+      }
+    }
+
+    const dots = LAYERS.flatMap(cfg => Array.from({length:cfg.n}, (_,i)=>new Dot(cfg,true)));
+    const dust  = dots.slice(0, LAYERS[0].n);
+    const MAXL  = MOBILE ? 70 : 95;
+
+    function drawLinks() {
+      for(let i=0;i<dust.length;i++){
+        for(let j=i+1;j<dust.length;j++){
+          const dx=dust[i].x-dust[j].x, dy=dust[i].y-dust[j].y;
+          const d2=dx*dx+dy*dy;
+          if(d2<MAXL*MAXL){
+            ctx.beginPath();
+            ctx.moveTo(dust[i].x,dust[i].y);
+            ctx.lineTo(dust[j].x,dust[j].y);
+            ctx.strokeStyle=`rgba(110,155,230,${.020*(1-Math.sqrt(d2)/MAXL)})`;
+            ctx.lineWidth=.35;
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    /* Throttle canvas en móvil a ~30fps para batería */
+    let lastFrame = 0;
+    const FPS_CAP = MOBILE ? 33 : 0;
+    (function loop(t) {
+      requestAnimationFrame(loop);
+      if(FPS_CAP && t-lastFrame < FPS_CAP) return;
+      lastFrame = t;
+      ctx.clearRect(0,0,W,H);
+      drawLinks();
+      dots.forEach(d=>{ d.update(); d.draw(); });
+    })(0);
+
+    /* ══════════════════════════════════
+       C. TILT 3D + GLARE
+    ══════════════════════════════════ */
+    const card  = document.getElementById('card');
+    const glare = document.getElementById('glare');
+    let tx=0,ty=0,cx=0,cy=0,hov=false;
+    const MAX = MOBILE ? 5 : 8;
+
+    function tiltLoop() {
+      cx += (tx-cx)*.055;
+      cy += (ty-cy)*.055;
+      const rX=-cy*MAX, rY=cx*MAX;
+      card.style.transform=`perspective(1400px) rotateX(${rX}deg) rotateY(${rY}deg) scale3d(1.006,1.006,1.006)`;
+      const gx=(cx+.5)*100, gy=(cy+.5)*100;
+      glare.style.background=
+        `radial-gradient(circle at ${gx}% ${gy}%,rgba(255,255,255,.07) 0%,rgba(255,255,255,.025) 35%,transparent 65%)`;
+      requestAnimationFrame(tiltLoop);
+    }
+    tiltLoop();
+
+    /* Mouse */
+    card.addEventListener('mousemove', e=>{
+      const r=card.getBoundingClientRect();
+      tx=(e.clientX-r.left)/r.width-.5;
+      ty=(e.clientY-r.top)/r.height-.5;
+      hov=true;
+    });
+    card.addEventListener('mouseleave',()=>{ hov=false; tx=0; ty=0; });
+    document.addEventListener('mousemove',e=>{
+      if(hov)return;
+      tx=((e.clientX/innerWidth)-.5)*.30;
+      ty=((e.clientY/innerHeight)-.5)*.22;
+    });
+
+    /* Touch parallax en móvil */
+    if(MOBILE) {
+      card.addEventListener('touchmove', e=>{
+        const t=e.touches[0];
+        const r=card.getBoundingClientRect();
+        tx=(t.clientX-r.left)/r.width-.5;
+        ty=(t.clientY-r.top)/r.height-.5;
+      },{passive:true});
+      card.addEventListener('touchend',()=>{ tx=0; ty=0; },{passive:true});
+    }
+
+    /* Giroscopio */
+    if(window.DeviceOrientationEvent){
+      addEventListener('deviceorientation',e=>{
+        tx=Math.max(-.5,Math.min(.5,(e.gamma||0)/24));
+        ty=Math.max(-.5,Math.min(.5,((e.beta||0)-45)/32));
+      });
+    }
+
+    /* ══════════════════════════════════
+       D. AUTO-SCALE solo en DESKTOP
+          En móvil → scroll elegante
+    ══════════════════════════════════ */
+    const scene = document.getElementById('scene');
+    function autoScale() {
+      if(isMobile()) { scene.style.transform=''; return; }
+      const pad=40;
+      const cardH=card.offsetHeight+pad;
+      const vh=innerHeight;
+      if(cardH>vh){
+        scene.style.transform=`scale(${Math.max(.58,vh/cardH)})`;
+      } else {
+        scene.style.transform='';
+      }
+    }
+    addEventListener('resize', autoScale);
+    setTimeout(autoScale, 600);
+
+    /* ══════════════════════════════════
+       E. SMOOTH SCROLL INDICATOR
+          (solo móvil, si hay overflow)
+    ══════════════════════════════════ */
+    if(MOBILE) {
+      setTimeout(()=>{
+        const sh = document.documentElement.scrollHeight;
+        const vh = window.innerHeight;
+        if(sh > vh + 40) {
+          /* Pequeño pulso visual que invita a bajar */
+          const ind = document.createElement('div');
+          ind.style.cssText=`
+            position:fixed;bottom:18px;left:50%;transform:translateX(-50%);
+            width:28px;height:28px;border-radius:50%;
+            background:rgba(191,149,63,.18);border:1px solid rgba(191,149,63,.4);
+            display:flex;align-items:center;justify-content:center;
+            z-index:999;pointer-events:none;
+            animation:indPulse 2s ease-in-out infinite;
+          `;
+          ind.innerHTML=`<svg width="10" height="10" viewBox="0 0 10 10">
+            <path d="M2 3.5L5 6.5L8 3.5" stroke="rgba(191,149,63,.8)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          </svg>`;
+          document.body.appendChild(ind);
+
+          const style=document.createElement('style');
+          style.textContent=`@keyframes indPulse{0%,100%{opacity:.5;transform:translateX(-50%) translateY(0)}50%{opacity:1;transform:translateX(-50%) translateY(-4px)}}`;
+          document.head.appendChild(style);
+
+          /* Desaparece al primer scroll */
+          window.addEventListener('scroll',()=>ind.remove(),{once:true});
+        }
+      }, 2000);
+    }
+
+  })();
+  </script>
+
+</body>
+</html>
